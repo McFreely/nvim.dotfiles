@@ -1,0 +1,6 @@
+{
+    "coc.preferences.formatOnSaveFiletypes": ["rust"],
+    "coc.preferences.bracketEnterImprove": true,
+    "coc.preferences.colorSupport": true,
+    "Lua.diagnostics.disable": ["undefined-global"]
+}

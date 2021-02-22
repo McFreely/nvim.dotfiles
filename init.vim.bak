@@ -1,0 +1,229 @@
+set nocompatible
+let g:netrw_dirhist_max = 0
+
+" Plugin management via vim-plug
+call plug#begin('~/.local/share/nvim/plugged')
+    Plug 'tweekmonster/startuptime.vim'
+    " Style
+    Plug 'ryanoasis/vim-devicons'
+    Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+	" Plug 'chriskempson/base16-vim'
+    Plug 'itchyny/lightline.vim'
+    Plug 'drewtempelmeyer/palenight.vim'
+    " PKB
+    "Plug 'KevinBockelandt/notoire'
+    Plug 'oberblastmeister/neuron.nvim'
+    " Navigation
+    Plug 'preservim/nerdtree'
+    Plug 'tpope/vim-vinegar'
+    " Shell
+    Plug 'tpope/vim-eunuch'
+	" Editing Plugins
+    Plug 'tpope/vim-commentary'
+	Plug 'Raimondi/delimitMate'
+    Plug 'tpope/vim-surround'
+    Plug 'wellle/targets.vim'
+    Plug 'tpope/vim-fugitive'
+    Plug 'tpope/vim-endwise'
+    " Search and Snippets
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    Plug 'junegunn/fzf.vim'
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    " Languages Plugins
+	Plug 'JulesWang/css.vim'
+	Plug 'cespare/vim-toml'
+	Plug 'isRuslan/vim-es6'
+	Plug 'leafgarland/typescript-vim'
+	Plug 'maxmellon/vim-jsx-pretty'
+	Plug 'pangloss/vim-javascript'
+	Plug 'rust-lang/rust.vim'
+	Plug 'tpope/vim-rails'
+    Plug 'godlygeek/tabular'
+    Plug 'pearofducks/ansible-vim'
+    Plug 'plasticboy/vim-markdown'
+    " Telescope
+    Plug 'nvim-lua/popup.nvim'
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim'
+
+    " Dotnet
+    " Plug 'omnisharp/omnisharp-vim'
+    " Plug 'nickspoons/vim-sharpenup'
+call plug#end()
+
+" Security
+set modelines=0
+" Fonts
+set encoding=utf8
+" Color
+set termguicolors
+let base16colorspace=256
+set background=dark
+colorscheme palenight
+let g:palenight_terminal_italics=1
+" TextWidth Indicator
+set colorcolumn=80
+" Syntax Highlighting
+syntax enable
+" Hide Buffer instead of closing them
+set hidden
+" Maintain undo history between sessions
+set undofile
+set undodir=~/.nvim/undo
+set noswapfile
+set history=200
+set laststatus=2
+" Case insensitive search
+set ignorecase
+set smartcase
+set infercase
+" Make Backspace behave sanely
+set backspace=indent,eol,start
+" Searching
+set hlsearch
+set incsearch
+:map <C-h> :noh<Cr>
+" Set indentation as 4 spaces
+set tabstop=4
+set shiftwidth=4
+set expandtab
+set softtabstop=4
+" Turn backup off since everything is in git
+set nobackup
+set nowb
+" Miscellaneous
+set shortmess+=I
+" Stop unnecessary rendering
+set lazyredraw
+" No Delay after pressing Esc key
+set notimeout 
+set ttimeout
+" Enable line number
+" set number
+" No line wrapping
+set nowrap
+" Folding
+set foldmethod=syntax
+set foldnestmax=10
+set nofoldenable
+set foldlevel=2
+
+" ===========
+"    REMAP
+" ===========
+let mapleader="\<Space>"
+" change esc to more confortable keystroke
+inoremap jk <esc>
+inoremap <esc> <nop>
+" reload conf
+nnoremap <leader>sv :source $MYVIMRC<CR>
+
+" ===============
+" Lightline
+" ===============
+set noshowmode "made redundant
+let g:lightline = {
+    \ 'colorscheme': 'palenight',
+    \ 'active': {
+    \   'left': [['mode', 'paste'],
+    \             ['gitbranch', 'readonly', 'absolutepath', 'modified'] ],
+    \   'right': [['lineinfo'],
+    \              ['percent'],
+    \              ['fileencoding', 'filetype'] ]
+    \ },
+    \ 'component_function': {
+    \   'gitbranch': 'FugitiveHead',
+    \   'cocstatus': 'coc#status'
+    \ }
+\ }
+" Use autocmd to force lightline update.
+" autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+
+" ==========
+" FZF
+" ==========
+map ; :FZF<CR>
+
+" =========
+"   CoC
+" ==========
+set pyxversion=3
+let g:coc_node_path='/usr/local/bin/node'
+
+" Use tab for trigger completion with character ahead and navigate
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Make <CR> auto-select the first completion item and notify coc.nvim to
+" format on enter, <cr> could be remapped by other vim plugin
+" NOTE custom function found on github, otherwise conflict with endwise
+inoremap <silent> <CR> <C-r>=<SID>coc_confirm()<CR>
+function! s:coc_confirm() abort
+  if pumvisible()
+    return coc#_select_confirm()
+  else
+    return "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+  endif
+endfunction
+
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+" Formatting selected code.
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+" ==========
+" Sharpenup
+" ==========
+" Sharpenup: {{{
+" All sharpenup mappings will begin with `<Space>os`, e.g. `<Space>osgd` for
+" :OmniSharpGotoDefinition
+" let g:sharpenup_map_prefix = '<Space>os'
+" let g:sharpenup_statusline_opts = { 'Text': '%s (%p/%P)' }
+" let g:sharpenup_statusline_opts.Highlight = 0
+
+" ==========
+" OMNISHARP
+" ==========
+" let g:OmniSharp_popup_position = 'peek'
+" let g:OmniSharp_popup_options = { 'winhl': 'Normal:NormalFloat' }
+" let g:OmniSharp_popup_mappings = {
+" \ 'sigNext': '<C-n>',
+" \ 'sigPrev': '<C-p>',
+" \ 'pageDown': ['<C-f>', '<PageDown>'],
+" \ 'pageUp': ['<C-b>', '<PageUp>']
+" \}
+
+" ==========
+" Notoire
+" ==========
+let g:notoire_folders = ["~/code/zettelkasten"]
+let g:notoire_file_extension = 'md'
+let g:notoire_display_file_extension = 1
+
+" ==========
+" NerdTree
+" ==========
+" let NERDTreeHijackNetrw=1
