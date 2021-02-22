@@ -31,7 +31,7 @@ return require('packer').startup(function()
 	-- Telescope
 	use { 'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}} }
 	-- PKB
-	use '~/code/neuron.nvim'
+	use {'McFreely/neuron.nvim', branch = "unstable"}
 	-- Journal
 	use 'junegunn/goyo.vim'
 	use 'junegunn/limelight.vim'
